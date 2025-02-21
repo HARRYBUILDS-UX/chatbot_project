@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:6.0
+    container_name: mongodb_container
+    restart: always
+    ports:
+      - "27017:27017"  # Expose MongoDB to the host
+    volumes:
+      - mongodb_data:/data/db  # Persist MongoDB data
+    environment:
+      MONGO_INITDB_DATABASE: chatbot_db  # Default database
+
+  chatbot:
+    build: .
+    container_name: chatbot_container
+    restart: always
+    ports:
+      - "8501:8501"  # Expose Streamlit app
+    depends_on:
+      - mongo  # Ensure MongoDB starts before chatbot
+    env_file:
+      - .env  # ✅ Load all sensitive environment variables from .env
+    volumes:
+      - .:/app  # Mount the project directory inside the container
+
+volumes:
+  mongodb_data:
+
+
